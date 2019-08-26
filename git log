@@ -1,0 +1,91 @@
+[1mdiff --git a/app/controllers/tasks_controller.rb b/app/controllers/tasks_controller.rb[m
+[1mindex 56b0c15..b9fda3b 100644[m
+[1m--- a/app/controllers/tasks_controller.rb[m
+[1m+++ b/app/controllers/tasks_controller.rb[m
+[36m@@ -53,7 +53,7 @@[m [mprivate[m
+ [m
+ # Strong Parameter[m
+  def task_params[m
+[31m-     params.require(:task).permit(:content)[m
+[32m+[m[32m     params.require(:task).permit(:content, :status)[m
+  end[m
+ [m
+ end[m
+\ No newline at end of file[m
+[1mdiff --git a/app/models/task.rb b/app/models/task.rb[m
+[1mindex 3c23424..b24f4c8 100644[m
+[1m--- a/app/models/task.rb[m
+[1m+++ b/app/models/task.rb[m
+[36m@@ -1,2 +1,4 @@[m
+ class Task < ApplicationRecord[m
+[32m+[m[32m    validates :content, presence: true, length: { maximum: 255 }[m
+[32m+[m[32m    validates :status, presence: true, length: { in: 1..10 }[m
+ end[m
+[1mdiff --git a/app/views/tasks/_form.html.erb b/app/views/tasks/_form.html.erb[m
+[1mindex daa17c3..4f0b652 100644[m
+[1m--- a/app/views/tasks/_form.html.erb[m
+[1m+++ b/app/views/tasks/_form.html.erb[m
+[36m@@ -1,4 +1,19 @@[m
+ <%= form_with(model: task, local: true) do |f| %>[m
+[32m+[m[32m  <% if task.errors.any? %>[m
+[32m+[m[32m    <div id="error_explanation">[m
+[32m+[m[32m      <ul>[m
+[32m+[m[32m        <% task.errors.full_messages.each do |msg| %>[m
+[32m+[m[41m        [m
+[32m+[m[32m          <li><%= msg %></li>[m
+[32m+[m[41m          [m
+[32m+[m[32m        <% end %>[m
+[32m+[m[41m        [m
+[32m+[m[32m      </ul>[m
+[32m+[m[32m    </div>[m
+[32m+[m[32m  <% end %>[m
+[32m+[m[41m  [m
+[32m+[m[32m  <%= f.label :status, 'ステータス' %>[m
+[32m+[m[32m  <%= f.text_field :status %>[m
+ [m
+   <%= f.label :content, 'タスク' %>[m
+   <%= f.text_field :content %>[m
+[1mdiff --git a/app/views/tasks/index.html.erb b/app/views/tasks/index.html.erb[m
+[1mindex 3db3b83..55850bd 100644[m
+[1m--- a/app/views/tasks/index.html.erb[m
+[1m+++ b/app/views/tasks/index.html.erb[m
+[36m@@ -2,7 +2,7 @@[m
+ [m
+ <ul>[m
+     <% @tasks.each do |task| %>[m
+[31m-    <li><%= link_to task.id, task %>:<%= task.content %></li>[m
+[32m+[m[32m    <li><%= link_to task.id, task %> : <%= task.status %> &gt; <%= task.content %></li>[m
+     <% end %>[m
+ </ul>[m
+ [m
+[1mdiff --git a/app/views/tasks/show.html.erb b/app/views/tasks/show.html.erb[m
+[1mindex fb0ca32..e16e38a 100644[m
+[1m--- a/app/views/tasks/show.html.erb[m
+[1m+++ b/app/views/tasks/show.html.erb[m
+[36m@@ -1,5 +1,6 @@[m
+ <h1>id: <%= @task.id %>のタスク内容</h1>[m
+ [m
+[32m+[m[32m<p><%= @task.status %></p>[m
+ <p><%= @task.content %></p>[m
+ [m
+ <%= link_to 'タスク一覧に戻る', tasks_path %>[m
+[1mdiff --git a/db/schema.rb b/db/schema.rb[m
+[1mindex ee09fbe..6bac1d0 100644[m
+[1m--- a/db/schema.rb[m
+[1m+++ b/db/schema.rb[m
+[36m@@ -10,12 +10,14 @@[m
+ #[m
+ # It's strongly recommended that you check this file into your version control system.[m
+ [m
+[31m-ActiveRecord::Schema.define(version: 2019_08_25_061250) do[m
+[32m+[m[32mActiveRecord::Schema.define(version: 2019_08_26_130301) do[m
+ [m
+   create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|[m
+     t.string "content"[m
+     t.datetime "created_at", null: false[m
+     t.datetime "updated_at", null: false[m
+[32m+[m[32m    t.string "title"[m
+[32m+[m[32m    t.text "status"[m
+   end[m
+ [m
+ end[m
