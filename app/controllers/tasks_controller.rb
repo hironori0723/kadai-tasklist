@@ -11,7 +11,7 @@ class TasksController < ApplicationController
  end
  
  def new
-     @task = Task.new
+     @task = current_user.tasks.build
  end
  
  def create
@@ -20,9 +20,8 @@ class TasksController < ApplicationController
          flash[:success] = 'Taskが新規に追加されました'
          redirect_to root_url
      else
-        @task = current_user.tasks.order(id: :desc).page(params[:page])
          flash.now[:danger] = 'Taskが投稿されませんでした'
-         render 'tasks/index'
+         render 'new'
      end
  end
  
@@ -49,7 +48,7 @@ class TasksController < ApplicationController
 private
 
  def correct_user
-     @task = cuurent_user.tasks.find_by(id: params[:id])
+     @task = current_user.tasks.find_by(id: params[:id])
      unless @task
      redirect_to root_url
      end
