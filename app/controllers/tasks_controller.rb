@@ -4,7 +4,7 @@ class TasksController < ApplicationController
  before_action :correct_user, only: [:update, :destroy]
  
  def index
-     @tasks = Task.all.page(params[:page]).per(10)
+     @tasks = current_user.tasks.page(params[:page]).per(10)
  end
  
  def show
@@ -48,7 +48,7 @@ class TasksController < ApplicationController
 private
 
  def set_task
-     @task = Task.find(params[:id])
+     @task = current_user.tasks.find(params[:id])
  end
 
 # Strong Parameter
